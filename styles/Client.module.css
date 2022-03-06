@@ -1,0 +1,52 @@
+@keyframes clientAnimation {
+  0% {
+    transform: rotate(-0.5deg);
+  }
+  50% {
+    transform: rotate(0.5deg);
+  }
+  100% {
+    transform: rotate(-0.5deg);
+  }
+}
+
+.client {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 25px;
+  transition: .2s;
+
+  /* animation-name: clientAnimation;
+  animation-duration: 4s; */
+  animation: clientAnimation 2s infinite;
+}
+
+.client:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.boxIcon {
+  margin-right: 20px;
+  color: darksalmon;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.oneInfo {
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.oneInfo > * {
+  margin-right: 10px;
+  align-self: center;
+}
