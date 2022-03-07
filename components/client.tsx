@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { ChangeEvent, FC, SyntheticEvent, useState } from 'react';
 import { FiAtSign, FiBell, FiBox, FiFolder, FiHardDrive, FiTerminal, FiUser, FiWifi, FiX } from 'react-icons/fi';
 import Spinner from 'react-spinners/BarLoader';
 
@@ -6,6 +6,7 @@ import { Client as ClientType } from "../types/client.type";
 import { useKickClient } from '../hooks/useKickClient';
 import styles from '../styles/Client.module.css';
 import { usePingClient } from '../hooks/usePingClient';
+import { useShell } from '../hooks/useShell';
 
 
 export const Client: FC<ClientType> = (client) => {
@@ -14,6 +15,31 @@ export const Client: FC<ClientType> = (client) => {
 
   const [kickClient, kickLoading] = useKickClient(client.Id, setClientLogs);
   const [pingClient, pingLoading] = usePingClient(client.Id, setClientLogs);
+  const [execute, initShell, shellLoading] = useShell(client.Id, setClientLogs);
+
+  const [shellInitialized, setShellInitialized] = useState<boolean>(false);
+  const [shellInput, setShellInput] = useState<string>('');
+
+  const handleInitShell = async () => {
+    const success = await initShell();
+    setShellInitialized(success);
+  };
+  
+  const handleShellInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setShellInput(event.target.value);
+  }
+
+  const handleShellSubmit = (event: SyntheticEvent) => {
+    event.preventDefault();
+
+    setShellInput('');
+
+    if (shellInput.trim() == '') {
+      return setClientLogs((logs) => [...logs, '$ ']);
+    }
+    
+    execute(shellInput);
+  }
 
   return (
     <div className={styles.client}>
@@ -72,12 +98,18 @@ export const Client: FC<ClientType> = (client) => {
               color='#e9967a'
             />
           }
-          <FiTerminal
-            className={styles.optionIcon}
-            size={30}
-            onClick={() => console.log('init shell')}
-            title='Initialize a shell.'
-          />
+          {!shellLoading
+          ? <FiTerminal
+              className={styles.optionIcon}
+              size={30}
+              onClick={handleInitShell}
+              title='Initialize a shell.'
+            />
+          : <Spinner
+              width={30}
+              color='#e9967a'
+            />
+          }
           {!kickLoading
           ? <FiX
               className={styles.optionIcon}
@@ -95,9 +127,23 @@ export const Client: FC<ClientType> = (client) => {
       <div className={styles.clientLog} style={{ display: clientLogs.length == 0 ? 'none': 'flex' }}>
         {clientLogs.map((log, i) => {
           return (
-            <span key={i}>&gt; {log}</span>
+            <span key={i}>{log}</span>
           );
         })}
+        <form
+          onSubmit={handleShellSubmit}
+          style={{ display: shellInitialized ? 'unset': 'none' }}
+        >
+          <label>
+            $ 
+            <input
+              className={styles.shellInput}
+              value={shellInput}
+              onChange={handleShellInputChange}
+              style={{ display: shellInitialized ? 'unset': 'none' }}
+            />
+          </label>
+        </form>
       </div>
       
     </div>

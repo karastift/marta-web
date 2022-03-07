@@ -10,7 +10,7 @@ import styles from '../styles/Home.module.css';
 
 const Home: NextPage = () => {
 
-  const [list, loading] = useClientList();
+  const [{ data: list }, loading] = useClientList();
 
   return (
     <div className={styles.container}>
@@ -41,4 +41,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default Home;

@@ -37,6 +37,7 @@
 
 .clientLog span {
   max-width: 300px;
+  white-space: pre-wrap;
 }
 
 .infoAndOptions {
@@ -83,4 +84,13 @@
 
 .optionIcon:hover {
   color: rgb(233, 207, 122);
+}
+
+.shellInput {
+  margin-top: 5px;
+  background-color: transparent;
+  outline: none;
+  color: white;
+  border: none;
+  width: 90%;
 }

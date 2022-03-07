@@ -1,10 +1,10 @@
 import useSWR from "swr"
 import { fetcher } from "../helpers/fetcher";
-import { Client } from "../types/client.type";
+import { UseClientListResponse } from "../types/apiResponses.type";
 
-export const useClientList: () => [Client[], boolean] = () => {
+export const useClientList: () => [UseClientListResponse, boolean] = () => {
 
-  const { data, error } = useSWR('http://127.0.0.1:8080/list', fetcher, { refreshInterval: 5,  });
+  const { data, error } = useSWR<UseClientListResponse>('http://127.0.0.1:8080/list', fetcher, { refreshInterval: 5 });
 
-  return [data ?? [], data == undefined || error != undefined]
+  return [data ?? { data: [], error: undefined }, data == undefined || error != undefined];
 };
