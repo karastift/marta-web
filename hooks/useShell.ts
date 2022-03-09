@@ -1,8 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import useSWR from "swr"
 import { fetcher } from "../helpers/fetcher";
 import { InitShellResponse, ShellCommandResponse } from "../types/apiResponses.type";
-import { Client } from "../types/client.type";
 
 type useShellType = (clientId: string, setLog: Dispatch<SetStateAction<string[]>>) => [(command: string) => void, () => Promise<boolean>, boolean];
 
@@ -13,6 +11,11 @@ export const useShell: useShellType = (clientId, setLog) => {
 
   const initShell = async (): Promise<boolean> => {
 
+    if (initialized) {
+      setInitialized(false);
+      return false;
+    }
+
     setLoading(true);
 
     return fetcher<InitShellResponse>('http://127.0.0.1:8080/initShell', {
@@ -21,8 +24,6 @@ export const useShell: useShellType = (clientId, setLog) => {
         clientId,
       }),
     }).then((j) => {
-
-      console.log(j)
 
       setLoading(false);
       setInitialized(j.data);
@@ -46,6 +47,9 @@ export const useShell: useShellType = (clientId, setLog) => {
         return [...currLogs, time + ' Did not execute command, because shell is not initialized.'];
       });
     };
+    if (command === 'clear') {
+      return setLog((log) => [log[0]]);
+    }
 
     setLoading(true);
 
@@ -58,8 +62,6 @@ export const useShell: useShellType = (clientId, setLog) => {
     }).then((j) => {
 
       setLoading(false);
-
-      console.log(j.data)
 
       setLog(currLogs => {
         return [...currLogs, '$ ' + command, j.data];

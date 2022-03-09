@@ -5,6 +5,16 @@ export interface InitShellResponse {
   error: ApiError | undefined
 }
 
+export interface PingResponse {
+  data: boolean;
+  error: ApiError | undefined
+}
+
+export interface KickResponse {
+  data: boolean;
+  error: ApiError | undefined
+}
+
 export interface ShellCommandResponse {
   data: string;
   error: ApiError | undefined

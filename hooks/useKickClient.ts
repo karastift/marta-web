@@ -1,4 +1,6 @@
 import { Dispatch, SetStateAction, useState } from "react";
+import { fetcher } from "../helpers/fetcher";
+import { KickResponse } from "../types/apiResponses.type";
 
 type useKickClientType = (clientId: string, setLog: Dispatch<SetStateAction<string[]>>) => [() => void, boolean, boolean];
 
@@ -11,29 +13,29 @@ export const useKickClient: useKickClientType = (clientId, setLog) => {
 
     setLoading(true);
 
-    fetch('http://127.0.0.1:8080/kick', {
+    fetcher<KickResponse>('http://127.0.0.1:8080/kick', {
       method: 'POST',
-      body: clientId + '\n',
-    }).then((res) => res.json().then(v => {
+      body: JSON.stringify({
+        clientId,
+      }),
+    }).then((j) => {
 
-      if (typeof v === 'boolean') {
-        setKicked(v);
+      setKicked(j.data);
 
-        const time = new Date().toLocaleString();
+      const time = new Date().toLocaleString();
 
-        if (v) {
-          setLog(currLogs => {
-            return [...currLogs, time + ' Client was kicked. It will be removed from this list in a few seconds.'];
-          });
-        } else {
-          setLog(currLogs => {
-            return [...currLogs, time + ' Could not kick this client for some reason.'];
-          });
-        }
+      if (j.data) {
+        setLog(currLogs => {
+          return [...currLogs, time + ' Client was kicked. It will be removed from this list in a few seconds.'];
+        });
+      } else {
+        setLog(currLogs => {
+          return [...currLogs, time + ' Could not kick this client for some reason.'];
+        });
       }
 
       setLoading(false);
-    }));
+    });
   };
   
   return [kickClient, loading, kicked];
